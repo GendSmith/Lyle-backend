@@ -1,12 +1,12 @@
-package com.example.yousef.server1;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.ArrayList;
+        import android.content.ContentValues;
+        import android.content.Context;
+        import android.database.Cursor;
+        import android.database.sqlite.SQLiteDatabase;
+        import android.database.sqlite.SQLiteOpenHelper;
+
+        import java.util.ArrayList;
 
 /**
  * Created by Yousef on 6/23/2019.
@@ -20,9 +20,9 @@ public class UserDatabase extends SQLiteOpenHelper {
     private static final String KEY_USERNAME = "username";
     private static final String KEY_PASSWORD = "password";
     private static final String KEY_PROFILE_PIC = "profilePic";
-    private static final String KEY_Job = "job";
+    private static final String KEY_JOB = "job";
     private static final String KEY_AGE = "age";
-    private static final String KEY_gender = "gender";
+    private static final String KEY_GENDER = "gender";
 
     public UserDatabase(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -35,9 +35,9 @@ public class UserDatabase extends SQLiteOpenHelper {
                 + KEY_USERNAME + " TEXT, "
                 + KEY_PASSWORD + " TEXT, "
                 + KEY_PROFILE_PIC + " TEXT, "
-                + KEY_Job + " TEXT, "
+                + KEY_JOB + " TEXT, "
                 + KEY_AGE + " INTEGER, "
-                + KEY_gender + " BOOLEAN" + ")";
+                + KEY_GENDER + " BOOLEAN" + ")";
         db.execSQL(CREATE_TABLE);
     }
 
@@ -49,7 +49,6 @@ public class UserDatabase extends SQLiteOpenHelper {
     }
 
 
-    // adding a new user
     void addUser(User user){
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -58,9 +57,9 @@ public class UserDatabase extends SQLiteOpenHelper {
         values.put(KEY_USERNAME, user.getUsername());
         values.put(KEY_PASSWORD, user.getPassword());
         values.put(KEY_PROFILE_PIC, user.getProfilePic());
-        values.put(KEY_Job, user.getjob());
+        values.put(KEY_JOB, user.getJob());
         values.put(KEY_AGE, user.getAge());
-        values.put(KEY_gender, user.getgender());
+        values.put(KEY_GENDER, user.getGender());
 
         db.insert(TABLE_USERS, null, values);
         db.close();
@@ -83,9 +82,9 @@ public class UserDatabase extends SQLiteOpenHelper {
             user.setUsername(cursor.getString(1));
             user.setPassword(cursor.getString(2));
             user.setProfilePic(cursor.getString(3));
-            user.setjob(cursor.getString(4));
+            user.setJob(cursor.getString(4));
             user.setAge(Integer.parseInt(cursor.getString(5)));
-            user.setgender(cursor.getInt(5) > 0);
+            user.setGender(cursor.getInt(5) > 0);
 
             userList.add(user);
         } while (cursor.moveToNext());
@@ -94,29 +93,42 @@ public class UserDatabase extends SQLiteOpenHelper {
         return userList;
     }
 
-
-    // to update user info
-    public int updateUsers(User user){
+    public void updateUser(User user){
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_USERNAME, user.getUsername());
         values.put(KEY_PASSWORD, user.getPassword());
         values.put(KEY_PROFILE_PIC, user.getProfilePic());
-        values.put(KEY_Job, user.getjob());
+        values.put(KEY_JOB, user.getJob());
         values.put(KEY_AGE, user.getAge());
-        values.put(KEY_gender, user.getgender());
+        values.put(KEY_GENDER, user.getGender());
 
-        return db.update(TABLE_USERS, values, KEY_ID + "=?",
-                new String[]{String.valueOf(user.getId())});
+        db.update(TABLE_USERS, values, KEY_ID + "="
+                + String.valueOf(user.getId()), null);
+        db.close();
     }
 
+    public void updateUserById(User user, int id){
+        SQLiteDatabase db = this.getWritableDatabase();
 
-    //delete a user
-    public void deleteUser(User user){
+        ContentValues values = new ContentValues();
+        values.put(KEY_USERNAME, user.getUsername());
+        values.put(KEY_PASSWORD, user.getPassword());
+        values.put(KEY_PROFILE_PIC, user.getProfilePic());
+        values.put(KEY_JOB, user.getJob());
+        values.put(KEY_AGE, user.getAge());
+        values.put(KEY_GENDER, user.getGender());
+
+        db.update(TABLE_USERS, values, KEY_ID + "="
+                + String.valueOf(id), null);
+        db.close();
+    }
+
+    public void deleteUserById(int id){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_USERS, KEY_ID + "=?",
-                new String[]{String.valueOf(user.getId())});
+                new String[]{String.valueOf(id)});
         db.close();
     }
 
@@ -137,21 +149,43 @@ public class UserDatabase extends SQLiteOpenHelper {
         db.execSQL(clearDBQuery);
     }
 
-    public User getUserById (int id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String countQuery = "SELECT  * FROM " + TABLE_USERS;
+    int getIdByUsername(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String countQuery = "SELECT " + KEY_ID + " FROM "
+                + TABLE_USERS + " WHERE "
+                + KEY_USERNAME + " = \""
+                + username + "\"";
         Cursor cursor = db.rawQuery(countQuery, null);
+        cursor.moveToNext();
+        try{
+            int ret = cursor.getInt(0);
+            cursor.close();
+            db.close();
+            return ret;
+        }catch (IndexOutOfBoundsException e){
+            cursor.close();
+            db.close();
+            return -1 ;
+        }
+    }
+
+    public User getUserById (int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String countQuery = "SELECT * FROM " + TABLE_USERS
+                + " WHERE " + KEY_ID
+                + " = " + id;
+        Cursor cursor = db.rawQuery(countQuery,null);
         User user = new User();
 
-        cursor.moveToPosition(id);
+        cursor.moveToNext();
 
         user.setId(Integer.parseInt(cursor.getString(0)));
         user.setUsername(cursor.getString(1));
         user.setPassword(cursor.getString(2));
         user.setProfilePic(cursor.getString(3));
-        user.setjob(cursor.getString(4));
+        user.setJob(cursor.getString(4));
         user.setAge(Integer.parseInt(cursor.getString(5)));
-        user.setgender(cursor.getInt(6) > 0);
+        user.setGender(cursor.getInt(6) > 0);
 
 
         db.close();
@@ -159,101 +193,98 @@ public class UserDatabase extends SQLiteOpenHelper {
         return user;
 
     }
-
-
-
-    int getIdByUsername(String username) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String countQuery = "SELECT  * FROM " + TABLE_USERS;
-        Cursor cursor = db.rawQuery(countQuery, null);
-
-        cursor.moveToFirst();
-        do {
-            if(cursor.getString(1).equals(username)){
-                int temp = Integer.parseInt(cursor.getString(0));
-                db.close();
-                cursor.close();
-                return temp;
-            }
-
-        } while (cursor.moveToNext());
-        db.close();
-        cursor.close();
-        return -1;
-    }
-
     String getUsernameById(int id){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String countQuery = "SELECT  * FROM " + TABLE_USERS;
-        Cursor cursor = db.rawQuery(countQuery, null);
-        User user = new User();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String countQuery = "SELECT " + KEY_USERNAME
+                + " FROM " + TABLE_USERS
+                + " WHERE " + KEY_ID
+                + " = " + id;
+        Cursor cursor = db.rawQuery(countQuery,null);
 
-        cursor.moveToPosition(id);
-
-        String ret = cursor.getString(1);
-        db.close();
-        cursor.close();
-        return ret;
+        cursor.moveToNext();
+        return cursor.getString(0);
     }
-
-
     String getPasswordById(int id){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String countQuery = "SELECT  * FROM " + TABLE_USERS;
-        Cursor cursor = db.rawQuery(countQuery, null);
-        User user = new User();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String countQuery = "SELECT " + KEY_USERNAME
+                + " FROM " + TABLE_USERS
+                + " WHERE " + KEY_ID
+                + " = " + id;
+        Cursor cursor = db.rawQuery(countQuery,null);
 
-        cursor.moveToPosition(id);
-
-        String ret = cursor.getString(2);
-        db.close();
-        cursor.close();
-        return ret;
+        cursor.moveToNext();
+        return cursor.getString(2);
     }
-
-    
     Boolean getGenderById(int id){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String countQuery = "SELECT  * FROM " + TABLE_USERS;
-        Cursor cursor = db.rawQuery(countQuery, null);
-        User user = new User();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String countQuery = "SELECT " + KEY_USERNAME
+                + " FROM " + TABLE_USERS
+                + " WHERE " + KEY_ID
+                + " = " + id;
+        Cursor cursor = db.rawQuery(countQuery,null);
 
-        cursor.moveToPosition(id);
+        cursor.moveToNext();
 
         boolean ret = cursor.getInt(6) > 0;
         db.close();
         cursor.close();
         return ret;
     }
-
-
     int getAgeById(int id){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String countQuery = "SELECT  * FROM " + TABLE_USERS;
-        Cursor cursor = db.rawQuery(countQuery, null);
-        User user = new User();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String countQuery = "SELECT " + KEY_USERNAME
+                + " FROM " + TABLE_USERS
+                + " WHERE " + KEY_ID
+                + " = " + id;
+        Cursor cursor = db.rawQuery(countQuery,null);
 
-        cursor.moveToPosition(id);
+        cursor.moveToNext();
 
-        int ret = Integer.parseInt(cursor.getString(5));
+        int ret = cursor.getInt(5);
         db.close();
         cursor.close();
         return ret;
     }
-
-
     String getJobById(int id){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String countQuery = "SELECT  * FROM " + TABLE_USERS;
-        Cursor cursor = db.rawQuery(countQuery, null);
-        User user = new User();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String countQuery = "SELECT " + KEY_USERNAME
+                + " FROM " + TABLE_USERS
+                + " WHERE " + KEY_ID
+                + " = " + id;
+        Cursor cursor = db.rawQuery(countQuery,null);
 
-        cursor.moveToPosition(id);
+        cursor.moveToNext();
 
         String ret = cursor.getString(4);
         db.close();
         cursor.close();
         return ret;
+    }
+    String getProfilePicById(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String countQuery = "SELECT " + KEY_USERNAME
+                + " FROM " + TABLE_USERS
+                + " WHERE " + KEY_ID
+                + " = " + id;
+        Cursor cursor = db.rawQuery(countQuery,null);
+
+        cursor.moveToNext();
+
+        String ret = cursor.getString(3);
+        db.close();
+        cursor.close();
+        return ret;
+    }
+
+    void setProfilePicById(int id, String profilePic){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_PROFILE_PIC, profilePic);
+
+        db.update(TABLE_USERS, values, KEY_ID + "="
+                + String.valueOf(id), null);
+        db.close();
     }
 
 }
