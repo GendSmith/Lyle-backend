@@ -42,7 +42,7 @@ public class UserDAO {
         return bean;
     }
 
-    public void add(User bean) {
+    public boolean add(User bean) {
 
         String sql = "insert into user values(? ,?,?,?,?,?)";
         try (Connection c = DBUtil.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
@@ -60,10 +60,11 @@ public class UserDAO {
             if (rs.next()) {
                 int id = rs.getInt(1);
                 bean.setId(id);
+                return true;
             }
         } catch (SQLException e) {
-
             e.printStackTrace();
         }
+        return  false;
     }
 }
