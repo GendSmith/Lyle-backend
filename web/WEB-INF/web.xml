@@ -12,4 +12,16 @@
         <servlet-name>user</servlet-name>
         <url-pattern>/user</url-pattern>
     </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>UserCtrl</servlet-name>
+        <servlet-class>controller.UserCtrl</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>UserCtrl</servlet-name>
+        <url-pattern>/userinfo</url-pattern>
+    </servlet-mapping>
+
 </web-app>

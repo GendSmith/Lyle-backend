@@ -11,8 +11,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 import bean.User;
 import service.UserSvc;
+import utils.JavaBeanToString;
 
 public class UserCtrl extends  HttpServlet{
    public UserCtrl(){
@@ -21,6 +23,7 @@ public class UserCtrl extends  HttpServlet{
 
    @Override
     protected void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException{
+       System.out.println(("post start23333"));
        res.setCharacterEncoding("UTF-8");
        res.setContentType("application/json; charset=UTF-8");
 
@@ -28,13 +31,9 @@ public class UserCtrl extends  HttpServlet{
        UserSvc uSvc = new UserSvc();
 
        String operationType = req.getParameter("type");
-       int id = Integer.parseInt( req.getParameter("id"));
-       String username = req.getParameter("username");
-       String password = req.getParameter("password");
-       int age = Integer.parseInt( req.getParameter("age"));
-       String profilePic = req.getParameter("profilePic");
-       String gender = req.getParameter("gender");
-       String job = req.getParameter("job");
+       System.out.println(operationType);
+
+
 
        if(operationType == null){
            out.println(-1);
@@ -42,11 +41,29 @@ public class UserCtrl extends  HttpServlet{
        }
 
        if(operationType.equals("getOneUserInfo")){
-           User user =  uSvc.get(id);
-           out.write(user.toString());
+           int id = Integer.parseInt( req.getParameter("id"));
+           try {
+               System.out.println("testabc1232323");
+               User user =  uSvc.get(id);
+               out.println(123);
+
+               out.write(JavaBeanToString.toString(user));
+           }catch (IllegalAccessException e){
+               e.printStackTrace();
+           }
+
+           return;
        }
 
        if(operationType.equals("addOneUser")){
+           String username = req.getParameter("username");
+           System.out.println(username);
+           String password = req.getParameter("password");
+           int age = Integer.parseInt( req.getParameter("age"));
+           String profilePic = req.getParameter("profilePic");
+           String gender = req.getParameter("gender");
+           String job = req.getParameter("job");
+
            User newUser = new User();
            newUser.setUsername(username);
            newUser.setPassword(password);
@@ -56,6 +73,7 @@ public class UserCtrl extends  HttpServlet{
            newUser.setgender(gender);
            boolean addRes = uSvc.add(newUser);
            out.write(addRes?"success":"fail");
+           return;
        }
    }
 }
