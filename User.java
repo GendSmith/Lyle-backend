@@ -1,8 +1,4 @@
-package com.example.yousef.server1;
 
-/**
- * Created by Yousef on 6/23/2019.
- */
 
 public class User {
     int id;
@@ -65,11 +61,11 @@ public class User {
         this.profilePic = profilePic;
     }
 
-    public String getjob() {
+    public String getJob() {
         return job;
     }
 
-    public void setjob(String job) {
+    public void setJob(String job) {
         this.job = job;
     }
 
