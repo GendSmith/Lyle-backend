@@ -21,7 +21,7 @@
 
     <servlet-mapping>
         <servlet-name>UserCtrl</servlet-name>
-        <url-pattern>/userinfo</url-pattern>
+        <url-pattern>/userInfo</url-pattern>
     </servlet-mapping>
 
 </web-app>

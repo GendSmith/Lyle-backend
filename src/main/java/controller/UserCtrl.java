@@ -18,7 +18,7 @@ import utils.JavaBeanToString;
 
 public class UserCtrl extends  HttpServlet{
    public UserCtrl(){
-       super();;
+       super();
    }
 
    @Override

@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
-  <artifact type="exploded-war" build-on-make="true" name="Lyle-backend:war exploded">
+  <artifact type="war" build-on-make="true" name="Lyle-backend-war-exploded">
     <output-path>$PROJECT_DIR$/out/artifacts/Lyle_backend_war_exploded</output-path>
-    <root id="root">
+    <root id="archive" name="Lyle-backend-war-exploded.war">
       <element id="javaee-facet-resources" facet="Lyle-backend/web/Web" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
