@@ -81,11 +81,11 @@ public class User {
         this.age = age;
     }
 
-    public boolean getgender() {
+    public boolean getGender() {
         return gender;
     }
 
-    public void setgender(boolean gender) {
+    public void setGender(boolean gender) {
         this.gender = gender;
     }
 }
